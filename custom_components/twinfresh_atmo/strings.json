@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TwinFresh Atmo Mini",
+        "description": "Enter connection details for your ventilation unit.",
+        "data": {
+          "host": "IP address",
+          "password": "Password (default: 1111)",
+          "device_id": "Device ID (e.g. 002C004A4B465718)",
+          "port": "Port (default: 4000)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to reach the device. Please check the IP address and Device ID."
+    }
+  }
+}

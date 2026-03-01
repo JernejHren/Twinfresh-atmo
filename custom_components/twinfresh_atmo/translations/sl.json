@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TwinFresh Atmo Mini",
+        "description": "Vnesite podatke za povezavo z rekuperatorjem.",
+        "data": {
+          "host": "IP naslov",
+          "password": "Geslo (privzeto: 1111)",
+          "device_id": "ID naprave (npr. 002C004A4B465718)",
+          "port": "Vrata (privzeto: 4000)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Naprave ni mogoče doseči. Preverite IP naslov in ID naprave."
+    }
+  }
+}

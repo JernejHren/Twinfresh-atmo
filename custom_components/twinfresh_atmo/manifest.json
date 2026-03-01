@@ -1,0 +1,10 @@
+{
+  "domain": "twinfresh_atmo",
+  "name": "VENTS TwinFresh Atmo Mini",
+  "version": "0.1.0",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "",
+  "iot_class": "local_polling",
+  "requirements": []
+}
