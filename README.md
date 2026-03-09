@@ -3,6 +3,7 @@
 A custom integration for controlling the **VENTS TwinFresh Atmo Mini Wi-Fi** ventilation unit (recuperator) directly from Home Assistant over the local network, without any cloud dependency.
 
 > **Tested on:** TwinFresh Atmo Mini Wi-Fi · Firmware 1.4 (2024-08-07) · unit_type `0x1a00`
+> 
 > **Tested on:** Blauberg Vento V.2
 ---
 
