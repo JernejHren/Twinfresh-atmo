@@ -5,6 +5,7 @@
         "title": "TwinFresh Atmo Mini",
         "description": "Enter connection details for your ventilation unit.",
         "data": {
+          "name": "Device name (e.g. Bathroom, Living Room)",
           "host": "IP address",
           "password": "Password (default: 1111)",
           "device_id": "Device ID (e.g. 002C004A4B465718)",

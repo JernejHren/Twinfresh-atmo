@@ -7,11 +7,7 @@ from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
 PRESET_MODES = ["low", "medium", "high"]
-
-# Map preset mode to percentage midpoint for slider display
 PRESET_TO_PCT = {"low": 33, "medium": 66, "high": 100}
-
-# Map airflow mode to HA direction concept
 AIRFLOW_TO_DIRECTION = {
     "ventilation":   "forward",
     "air_supply":    "reverse",
@@ -20,7 +16,6 @@ AIRFLOW_TO_DIRECTION = {
 
 
 def pct_to_preset(pct: int) -> str:
-    """Convert percentage (1-100) to the nearest preset mode."""
     if pct <= 33:
         return "low"
     elif pct <= 66:
@@ -31,7 +26,7 @@ def pct_to_preset(pct: int) -> str:
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator: AtmoCoordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([AtmoFanEntity(coordinator, entry)])
+    async_add_entities([AtmoFanEntity(coordinator)])
 
 
 class AtmoFanEntity(CoordinatorEntity, FanEntity):
@@ -46,16 +41,20 @@ class AtmoFanEntity(CoordinatorEntity, FanEntity):
         | FanEntityFeature.TURN_OFF
     )
     _attr_preset_modes = PRESET_MODES
-    _attr_speed_count = 3  # three discrete speed levels
+    _attr_speed_count = 3
 
-    def __init__(self, coordinator: AtmoCoordinator, entry) -> None:
+    def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_fan"
-        self._attr_name = entry.title
+        self._attr_name = name
+        self.entity_id = f"fan.{slug}_twinfresh"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name=entry.title,
+            name=name,
             model="TwinFresh Atmo Mini",
             sw_version=self._fan.firmware,
             manufacturer="VENTS",
@@ -71,7 +70,6 @@ class AtmoFanEntity(CoordinatorEntity, FanEntity):
 
     @property
     def percentage(self) -> int | None:
-        """Return current speed as percentage for slider display."""
         return PRESET_TO_PCT.get(self._fan.speed or "")
 
     @property
@@ -80,7 +78,6 @@ class AtmoFanEntity(CoordinatorEntity, FanEntity):
 
     @property
     def oscillating(self) -> bool:
-        """Heat recovery mode is represented as oscillating in HA."""
         return self._fan.airflow == "heat_recovery"
 
     @property
@@ -115,18 +112,15 @@ class AtmoFanEntity(CoordinatorEntity, FanEntity):
             await self.coordinator.async_refresh()
 
     async def async_set_percentage(self, percentage: int) -> None:
-        """Map slider percentage to the nearest discrete speed preset."""
         await self.hass.async_add_executor_job(self._fan.set_speed, pct_to_preset(percentage))
         await self.coordinator.async_refresh()
 
     async def async_oscillate(self, oscillating: bool) -> None:
-        """Toggle heat recovery mode on/off."""
         mode = "heat_recovery" if oscillating else "ventilation"
         await self.hass.async_add_executor_job(self._fan.set_airflow, mode)
         await self.coordinator.async_refresh()
 
     async def async_set_direction(self, direction: str) -> None:
-        """forward = ventilation, reverse = air supply."""
         mode = "ventilation" if direction == "forward" else "air_supply"
         await self.hass.async_add_executor_job(self._fan.set_airflow, mode)
         await self.coordinator.async_refresh()

@@ -7,36 +7,40 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
-# (property_name, display_name, param_id, entity_category)
-SWITCHES = [
-    ("humidity_sensor_state", "Humidity Sensor",  0x000f, EntityCategory.CONFIG),
-    ("relay_sensor_state",    "Relay Sensor",     0x0014, EntityCategory.CONFIG),
-    ("analogV_sensor_state",  "Analog V Sensor",  0x0016, EntityCategory.CONFIG),
+# (prop, display_suffix, param_id, entity_category)
+SWITCH_TYPES = [
+    ("humidity_sensor_state", "Humidity Sensor", 0x000f, EntityCategory.CONFIG),
+    ("relay_sensor_state",    "Relay Sensor",    0x0014, EntityCategory.CONFIG),
+    ("analogV_sensor_state",  "Analog V Sensor", 0x0016, EntityCategory.CONFIG),
 ]
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator: AtmoCoordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([
-        AtmoSwitch(coordinator, prop, name, param_id, cat)
-        for prop, name, param_id, cat in SWITCHES
+        AtmoSwitch(coordinator, prop, suffix, param_id, cat)
+        for prop, suffix, param_id, cat in SWITCH_TYPES
     ])
 
 
 class AtmoSwitch(CoordinatorEntity, SwitchEntity):
     """Switch that enables or disables a device sensor input."""
 
-    def __init__(self, coordinator, prop, name, param_id, entity_category):
+    def __init__(self, coordinator, prop, suffix, param_id, entity_category):
         super().__init__(coordinator)
         self._fan = coordinator.fan
         self._prop = prop
         self._param_id = param_id
-        self._attr_name = f"Atmo {name}"
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_{prop}"
+        self._attr_name = f"{name} {suffix}"
+        self.entity_id = f"switch.{slug}_{prop}"
         self._attr_entity_category = entity_category
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     @property

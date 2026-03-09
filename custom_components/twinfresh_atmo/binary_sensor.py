@@ -7,33 +7,43 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
+# (prop, display_suffix, device_class, entity_category, icon)
+BINARY_SENSOR_TYPES = [
+    ("filter_replacement_status", "Filter Replacement", BinarySensorDeviceClass.PROBLEM,      None,                      "mdi:air-filter"),
+    ("alarm_status",              "Alarm",              BinarySensorDeviceClass.PROBLEM,      None,                      "mdi:alarm-light"),
+    ("boost_status",              "Boost",              None,                                 None,                      "mdi:rocket-launch"),
+    ("relay_status",              "Relay Status",       None,                                 EntityCategory.DIAGNOSTIC, "mdi:electric-switch"),
+    ("cloud_server_state",        "Cloud Connection",   BinarySensorDeviceClass.CONNECTIVITY, None,                      "mdi:cloud"),
+]
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator: AtmoCoordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([
-        AtmoBinarySensor(coordinator, "filter_replacement_status", "Filter Replacement", BinarySensorDeviceClass.PROBLEM,      None,                      "mdi:air-filter"),
-        AtmoBinarySensor(coordinator, "alarm_status",              "Alarm",              BinarySensorDeviceClass.PROBLEM,      None,                      "mdi:alarm-light"),
-        AtmoBinarySensor(coordinator, "boost_status",              "Boost",              None,                                 None,                      "mdi:rocket-launch"),
-        AtmoBinarySensor(coordinator, "relay_status",              "Relay Status",       None,                                 EntityCategory.DIAGNOSTIC, "mdi:electric-switch"),
-        AtmoBinarySensor(coordinator, "cloud_server_state",        "Cloud Connection",   BinarySensorDeviceClass.CONNECTIVITY, None,                      "mdi:cloud"),
+        AtmoBinarySensor(coordinator, prop, suffix, dc, cat, icon)
+        for prop, suffix, dc, cat, icon in BINARY_SENSOR_TYPES
     ])
 
 
 class AtmoBinarySensor(CoordinatorEntity, BinarySensorEntity):
     """Binary sensor that reads a single on/off property from AtmoFan."""
 
-    def __init__(self, coordinator, prop, name, device_class, entity_category, icon=None):
+    def __init__(self, coordinator, prop, suffix, device_class, entity_category, icon):
         super().__init__(coordinator)
         self._fan = coordinator.fan
         self._prop = prop
-        self._attr_name = f"Atmo {name}"
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_{prop}"
+        self._attr_name = f"{name} {suffix}"
+        self.entity_id = f"binary_sensor.{slug}_{prop}"
         self._attr_device_class = device_class
         self._attr_entity_category = entity_category
         self._attr_icon = icon
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     @property

@@ -25,11 +25,15 @@ class AtmoResetFilterButton(CoordinatorEntity, ButtonEntity):
     def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_reset_filter"
-        self._attr_name = "Atmo Reset Filter Timer"
+        self._attr_name = f"{name} Reset Filter Timer"
+        self.entity_id = f"button.{slug}_reset_filter"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     async def async_press(self) -> None:
@@ -47,11 +51,15 @@ class AtmoResetAlarmsButton(CoordinatorEntity, ButtonEntity):
     def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_reset_alarms"
-        self._attr_name = "Atmo Reset Alarms"
+        self._attr_name = f"{name} Reset Alarms"
+        self.entity_id = f"button.{slug}_reset_alarms"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     async def async_press(self) -> None:

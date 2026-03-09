@@ -3,7 +3,7 @@ from __future__ import annotations
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT
-from .const import DOMAIN, CONF_DEVICE_ID, DEFAULT_PORT, DEFAULT_PASSWORD
+from .const import DOMAIN, CONF_DEVICE_ID, CONF_NAME, DEFAULT_PORT, DEFAULT_PASSWORD, DEFAULT_NAME
 from .atmo_fan import AtmoFan
 
 
@@ -30,7 +30,7 @@ class AtmoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     await self.async_set_unique_id(user_input[CONF_DEVICE_ID])
                     self._abort_if_unique_id_configured()
                     return self.async_create_entry(
-                        title=f"TwinFresh Atmo Mini ({user_input[CONF_HOST]})",
+                        title=user_input[CONF_NAME],
                         data=user_input,
                     )
             except Exception:
@@ -39,6 +39,7 @@ class AtmoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
+                vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
                 vol.Required(CONF_HOST): str,
                 vol.Required(CONF_PASSWORD, default=DEFAULT_PASSWORD): str,
                 vol.Required(CONF_DEVICE_ID): str,

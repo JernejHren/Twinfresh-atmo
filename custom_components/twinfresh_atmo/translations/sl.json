@@ -5,6 +5,7 @@
         "title": "TwinFresh Atmo Mini",
         "description": "Vnesite podatke za povezavo z rekuperatorjem.",
         "data": {
+          "name": "Ime naprave (npr. Kopalnica, Dnevna soba)",
           "host": "IP naslov",
           "password": "Geslo (privzeto: 1111)",
           "device_id": "ID naprave (npr. 002C004A4B465718)",

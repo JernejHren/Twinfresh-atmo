@@ -7,13 +7,19 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
+# (prop, display_suffix, param_id, min, max, step, unit, entity_category)
+NUMBER_TYPES = [
+    ("humidity_treshold", "Humidity Threshold",     0x0019, 30, 90,  1, PERCENTAGE, EntityCategory.CONFIG),
+    ("analogV_treshold",  "Analog Voltage Threshold", 0x00b8, 0, 100, 1, None,      EntityCategory.CONFIG),
+    ("boost_time",        "Boost Duration",          0x0066, 1,  60,  1, "min",     EntityCategory.CONFIG),
+]
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator: AtmoCoordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([
-        AtmoNumber(coordinator, "humidity_treshold", "Humidity Threshold",    0x0019, 30, 90,  1, PERCENTAGE, EntityCategory.CONFIG),
-        AtmoNumber(coordinator, "analogV_treshold",  "Analog Voltage Threshold", 0x00b8, 0, 100, 1, None,      EntityCategory.CONFIG),
-        AtmoNumber(coordinator, "boost_time",        "Boost Duration",        0x0066, 1,  60,  1, "min",      EntityCategory.CONFIG),
+        AtmoNumber(coordinator, prop, suffix, param_id, mn, mx, step, unit, cat)
+        for prop, suffix, param_id, mn, mx, step, unit, cat in NUMBER_TYPES
     ])
 
 
@@ -22,13 +28,17 @@ class AtmoNumber(CoordinatorEntity, NumberEntity):
 
     _attr_mode = NumberMode.SLIDER
 
-    def __init__(self, coordinator, prop, name, param_id, min_val, max_val, step, unit, entity_category):
+    def __init__(self, coordinator, prop, suffix, param_id, min_val, max_val, step, unit, entity_category):
         super().__init__(coordinator)
         self._fan = coordinator.fan
         self._prop = prop
         self._param_id = param_id
-        self._attr_name = f"Atmo {name}"
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_{prop}_number"
+        self._attr_name = f"{name} {suffix}"
+        self.entity_id = f"number.{slug}_{prop}"
         self._attr_native_min_value = min_val
         self._attr_native_max_value = max_val
         self._attr_native_step = step
@@ -36,7 +46,7 @@ class AtmoNumber(CoordinatorEntity, NumberEntity):
         self._attr_entity_category = entity_category
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     @property

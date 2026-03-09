@@ -26,12 +26,16 @@ class AtmoSpeedSelect(CoordinatorEntity, SelectEntity):
     def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_speed_select"
-        self._attr_name = "Atmo Speed"
+        self._attr_name = f"{name} Speed"
+        self.entity_id = f"select.{slug}_speed"
         self._attr_options = SPEED_OPTIONS
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     @property
@@ -51,12 +55,16 @@ class AtmoAirflowSelect(CoordinatorEntity, SelectEntity):
     def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
+        slug = coordinator.slug
+        name = coordinator.device_name
+
         self._attr_unique_id = f"{self._fan.id}_airflow_select"
-        self._attr_name = "Atmo Airflow"
+        self._attr_name = f"{name} Airflow"
+        self.entity_id = f"select.{slug}_airflow"
         self._attr_options = AIRFLOW_OPTIONS
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._fan.id)},
-            name="TwinFresh Atmo Mini",
+            name=name,
         )
 
     @property
