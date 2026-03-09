@@ -120,7 +120,7 @@ FDFD + 02 + [id_len][device_id] + [pwd_len][password] + [func] + [params] + [che
 | Device                        | Status       |
 |-------------------------------|--------------|
 | TwinFresh Atmo Mini Wi-Fi     | ✅ Tested     |
-| Vento V.2 | Blauberg | same protocol, fully supported |
+| Vento V.2 Blauberg | same protocol, fully supported |
 
 
 Other devices using the pyEcoventV2 protocol may work. Please open an issue with your `unit_type` value if you test on a different device.
