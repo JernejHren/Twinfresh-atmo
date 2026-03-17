@@ -4,6 +4,7 @@ from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySen
 from homeassistant.const import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.util import slugify
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
@@ -37,7 +38,7 @@ class AtmoBinarySensor(CoordinatorEntity, BinarySensorEntity):
 
         self._attr_unique_id = f"{self._fan.id}_{prop}"
         self._attr_name = f"{name} {suffix}"
-        self.entity_id = f"binary_sensor.{slug}_{prop}"
+        self.entity_id = f"binary_sensor.{slug}_{slugify(prop)}"
         self._attr_device_class = device_class
         self._attr_entity_category = entity_category
         self._attr_icon = icon

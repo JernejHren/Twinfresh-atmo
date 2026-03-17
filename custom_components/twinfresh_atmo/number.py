@@ -4,6 +4,7 @@ from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import PERCENTAGE, EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.util import slugify
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
@@ -38,7 +39,7 @@ class AtmoNumber(CoordinatorEntity, NumberEntity):
 
         self._attr_unique_id = f"{self._fan.id}_{prop}_number"
         self._attr_name = f"{name} {suffix}"
-        self.entity_id = f"number.{slug}_{prop}"
+        self.entity_id = f"number.{slug}_{slugify(prop)}"
         self._attr_native_min_value = min_val
         self._attr_native_max_value = max_val
         self._attr_native_step = step

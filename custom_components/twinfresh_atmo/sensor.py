@@ -4,21 +4,24 @@ from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, Sen
 from homeassistant.const import PERCENTAGE, EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.util import slugify
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
 # (prop, display_suffix, unit, device_class, state_class, entity_category, icon)
+# Note: EntityCategory.CONFIG is not allowed on sensor entities.
+# Configurable values (humidity_treshold, boost_time, analogV_treshold)
+# are exposed as number entities instead.
 SENSOR_TYPES = [
-    ("humidity",               "Humidity",           PERCENTAGE, SensorDeviceClass.HUMIDITY,  SensorStateClass.MEASUREMENT, None,                      "mdi:water-percent"),
-    ("fan1_speed",             "Fan 1 RPM",          "RPM",      None,                        SensorStateClass.MEASUREMENT, EntityCategory.DIAGNOSTIC, "mdi:fan"),
-    ("fan2_speed",             "Fan 2 RPM",          "RPM",      None,                        SensorStateClass.MEASUREMENT, EntityCategory.DIAGNOSTIC, "mdi:fan"),
-    ("machine_hours",          "Operating Hours",    "h",        SensorDeviceClass.DURATION,  SensorStateClass.MEASUREMENT, EntityCategory.DIAGNOSTIC, "mdi:clock-outline"),
-    ("filter_timer_countdown", "Filter Time Left",   None,       None,                        None,                         EntityCategory.DIAGNOSTIC, "mdi:timer-sand"),
-    ("firmware",               "Firmware",           None,       None,                        None,                         EntityCategory.DIAGNOSTIC, "mdi:chip"),
-    ("curent_wifi_ip",         "WiFi IP",            None,       None,                        None,                         EntityCategory.DIAGNOSTIC, "mdi:ip-network"),
-    ("alarm_status",           "Alarm",              None,       None,                        None,                         None,                      "mdi:alarm-light"),
-    ("boost_time",             "Boost Duration",     "min",      None,                        None,                         EntityCategory.DIAGNOSTIC, "mdi:timer"),
-    ("humidity_treshold",      "Humidity Threshold", PERCENTAGE, None,                        None,                         EntityCategory.CONFIG,     "mdi:water-percent"),
+    ("humidity",               "Humidity",          PERCENTAGE, SensorDeviceClass.HUMIDITY, SensorStateClass.MEASUREMENT, None,                      "mdi:water-percent"),
+    ("fan1_speed",             "Fan 1 RPM",         "RPM",      None,                       SensorStateClass.MEASUREMENT, EntityCategory.DIAGNOSTIC, "mdi:fan"),
+    ("fan2_speed",             "Fan 2 RPM",         "RPM",      None,                       SensorStateClass.MEASUREMENT, EntityCategory.DIAGNOSTIC, "mdi:fan"),
+    ("machine_hours",          "Operating Hours",   "h",        SensorDeviceClass.DURATION, SensorStateClass.MEASUREMENT, EntityCategory.DIAGNOSTIC, "mdi:clock-outline"),
+    ("filter_timer_countdown", "Filter Time Left",  None,       None,                       None,                         EntityCategory.DIAGNOSTIC, "mdi:timer-sand"),
+    ("firmware",               "Firmware",          None,       None,                       None,                         EntityCategory.DIAGNOSTIC, "mdi:chip"),
+    ("curent_wifi_ip",         "WiFi IP",           None,       None,                       None,                         EntityCategory.DIAGNOSTIC, "mdi:ip-network"),
+    ("alarm_status",           "Alarm",             None,       None,                       None,                         None,                      "mdi:alarm-light"),
+    ("boost_time",             "Boost Duration",    "min",      None,                       None,                         EntityCategory.DIAGNOSTIC, "mdi:timer"),
 ]
 
 
@@ -42,7 +45,7 @@ class AtmoSensor(CoordinatorEntity, SensorEntity):
 
         self._attr_unique_id = f"{self._fan.id}_{prop}"
         self._attr_name = f"{name} {suffix}"
-        self.entity_id = f"sensor.{slug}_{prop}"
+        self.entity_id = f"sensor.{slug}_{slugify(prop)}"
         self._attr_native_unit_of_measurement = unit
         self._attr_device_class = device_class
         self._attr_state_class = state_class
