@@ -217,8 +217,13 @@ def decode(param_id: int, val_hex: str):
             total_min = int(val_hex, 16)
             return round(total_min / 60, 1)
         elif name == "filter_timer_countdown":
-            b = int(val_hex, 16).to_bytes(max(len(val_hex) // 2, 4), "big")
-            return f"{b[-3]}d {b[-2]}h {b[-1]}m"
+            # 32-bit payload: [minutes, hours, days, reserved]
+            # Some devices prepend zeros, so always parse from the last 4 bytes.
+            b = int(val_hex, 16).to_bytes(max((len(val_hex) + 1) // 2, 4), "big")
+            minutes = b[-4]
+            hours = b[-3]
+            days = b[-2]
+            return f"{days}d {hours:02d}h {minutes:02d}m"
         elif name == "timer_counter":
             b = int(val_hex, 16).to_bytes(max(len(val_hex) // 2, 3), "big")
             return f"{b[-3]}h {b[-2]}m {b[-1]}s"
