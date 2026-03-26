@@ -95,6 +95,12 @@ class AtmoFanEntity(CoordinatorEntity, FanEntity):
         }
 
     async def async_turn_on(self, percentage=None, preset_mode=None, **kwargs):
+        # Backward compatibility: some callers still pass `speed` instead of
+        # `preset_mode`/`percentage` when turning on a fan.
+        speed = kwargs.get("speed")
+        if preset_mode is None and isinstance(speed, str) and speed in PRESET_MODES:
+            preset_mode = speed
+
         await self.hass.async_add_executor_job(self._fan.turn_on)
         if preset_mode and preset_mode in PRESET_MODES:
             await self.hass.async_add_executor_job(self._fan.set_speed, preset_mode)
@@ -108,10 +114,14 @@ class AtmoFanEntity(CoordinatorEntity, FanEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         if preset_mode in PRESET_MODES:
+            if not self.is_on:
+                await self.hass.async_add_executor_job(self._fan.turn_on)
             await self.hass.async_add_executor_job(self._fan.set_speed, preset_mode)
             await self.coordinator.async_refresh()
 
     async def async_set_percentage(self, percentage: int) -> None:
+        if not self.is_on:
+            await self.hass.async_add_executor_job(self._fan.turn_on)
         await self.hass.async_add_executor_job(self._fan.set_speed, pct_to_preset(percentage))
         await self.coordinator.async_refresh()
 
