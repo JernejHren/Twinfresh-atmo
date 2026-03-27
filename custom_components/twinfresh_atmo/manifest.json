@@ -1,7 +1,7 @@
 {
   "domain": "twinfresh_atmo",
   "name": "VENTS TwinFresh Atmo Mini",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "codeowners": [],
   "config_flow": true,
   "documentation": "",
