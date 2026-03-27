@@ -147,3 +147,4 @@ Apache License 2.0 — see [LICENSE](LICENSE) for details.
 ## Acknowledgements
 
 Protocol based on [pyEcoventV2](https://github.com/gody01/pyEcoventV2) by [@gody01](https://github.com/gody01).
+Community-reported fixes for filter countdown decoding and power-on-with-speed behavior were contributed by [@ernestk84](https://github.com/ernestk84).
