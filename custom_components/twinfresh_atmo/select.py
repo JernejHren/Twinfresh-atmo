@@ -1,12 +1,13 @@
 """Select entities for VENTS TwinFresh Atmo Mini."""
 from __future__ import annotations
+
 from homeassistant.components.select import SelectEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.device_registry import DeviceInfo
+
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
-SPEED_OPTIONS   = ["low", "medium", "high"]
+SPEED_OPTIONS = ["standby", "low", "medium", "high", "manual"]
 AIRFLOW_OPTIONS = ["ventilation", "heat_recovery", "air_supply"]
 
 
@@ -19,28 +20,23 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class AtmoSpeedSelect(CoordinatorEntity, SelectEntity):
-    """Select entity to set fan speed (low / medium / high)."""
+    """Select entity to set fan speed (standby / low / medium / high / manual)."""
 
     _attr_icon = "mdi:speedometer"
+    _attr_options = SPEED_OPTIONS
 
     def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
-        slug = coordinator.slug
-        name = coordinator.device_name
-
         self._attr_unique_id = f"{self._fan.id}_speed_select"
-        self._attr_name = f"{name} Speed"
-        self.entity_id = f"select.{slug}_speed"
-        self._attr_options = SPEED_OPTIONS
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self._fan.id)},
-            name=name,
-        )
+        self._attr_name = f"{coordinator.device_name} Speed"
+        self._attr_suggested_object_id = f"{coordinator.slug}_speed"
+        self._attr_device_info = coordinator.device_info
 
     @property
     def current_option(self) -> str | None:
-        return self._fan.speed
+        speed = self._fan.speed
+        return speed if speed in SPEED_OPTIONS else None
 
     async def async_select_option(self, option: str) -> None:
         await self.hass.async_add_executor_job(self._fan.set_speed, option)
@@ -51,25 +47,20 @@ class AtmoAirflowSelect(CoordinatorEntity, SelectEntity):
     """Select entity to set airflow mode (ventilation / heat_recovery / air_supply)."""
 
     _attr_icon = "mdi:air-filter"
+    _attr_options = AIRFLOW_OPTIONS
 
     def __init__(self, coordinator: AtmoCoordinator) -> None:
         super().__init__(coordinator)
         self._fan = coordinator.fan
-        slug = coordinator.slug
-        name = coordinator.device_name
-
         self._attr_unique_id = f"{self._fan.id}_airflow_select"
-        self._attr_name = f"{name} Airflow"
-        self.entity_id = f"select.{slug}_airflow"
-        self._attr_options = AIRFLOW_OPTIONS
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self._fan.id)},
-            name=name,
-        )
+        self._attr_name = f"{coordinator.device_name} Airflow"
+        self._attr_suggested_object_id = f"{coordinator.slug}_airflow"
+        self._attr_device_info = coordinator.device_info
 
     @property
     def current_option(self) -> str | None:
-        return self._fan.airflow
+        airflow = self._fan.airflow
+        return airflow if airflow in AIRFLOW_OPTIONS else None
 
     async def async_select_option(self, option: str) -> None:
         await self.hass.async_add_executor_job(self._fan.set_airflow, option)
