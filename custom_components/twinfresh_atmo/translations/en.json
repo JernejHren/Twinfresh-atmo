@@ -15,6 +15,26 @@
     },
     "error": {
       "cannot_connect": "Unable to reach the device. Please check the IP address and Device ID."
+    },
+    "abort": {
+      "already_configured": "This TwinFresh device is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "TwinFresh Connection Settings",
+        "description": "Update the IP address, port, or password for your TwinFresh unit.",
+        "data": {
+          "host": "IP address",
+          "password": "Password",
+          "port": "Port (default: 4000)",
+          "update_interval": "Poll interval in seconds (10-600)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to reach the device at the specified IP address and port."
     }
   }
 }

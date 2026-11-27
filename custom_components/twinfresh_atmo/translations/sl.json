@@ -15,6 +15,26 @@
     },
     "error": {
       "cannot_connect": "Naprave ni mogoče doseči. Preverite IP naslov in ID naprave."
+    },
+    "abort": {
+      "already_configured": "Ta naprava TwinFresh je že nastavljena."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Nastavitve povezave TwinFresh",
+        "description": "Posodobite IP naslov, vrata ali geslo rekuperatorja.",
+        "data": {
+          "host": "IP naslov",
+          "password": "Geslo",
+          "port": "Vrata (privzeto: 4000)",
+          "update_interval": "Interval osveževanja v sekundah (10-600)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Naprave na navedenem IP naslovu in vratih ni mogoče doseči."
     }
   }
 }

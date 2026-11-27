@@ -1,18 +1,18 @@
 """Switch entities for VENTS TwinFresh Atmo Mini."""
 from __future__ import annotations
+
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.util import slugify
+
 from .const import DOMAIN
 from .coordinator import AtmoCoordinator
 
-# (prop, display_suffix, param_id, entity_category)
 SWITCH_TYPES = [
-    ("humidity_sensor_state", "Humidity Sensor", 0x000f, EntityCategory.CONFIG),
-    ("relay_sensor_state",    "Relay Sensor",    0x0014, EntityCategory.CONFIG),
-    ("analogV_sensor_state",  "Analog V Sensor", 0x0016, EntityCategory.CONFIG),
+    ("humidity_sensor_state", "Humidity Sensor", 0x000F, EntityCategory.CONFIG),
+    ("relay_sensor_state", "Relay Sensor", 0x0014, EntityCategory.CONFIG),
+    ("analogV_sensor_state", "Analog V Sensor", 0x0016, EntityCategory.CONFIG),
 ]
 
 
@@ -32,17 +32,12 @@ class AtmoSwitch(CoordinatorEntity, SwitchEntity):
         self._fan = coordinator.fan
         self._prop = prop
         self._param_id = param_id
-        slug = coordinator.slug
-        name = coordinator.device_name
 
         self._attr_unique_id = f"{self._fan.id}_{prop}"
-        self._attr_name = f"{name} {suffix}"
-        self.entity_id = f"switch.{slug}_{slugify(prop)}"
+        self._attr_name = f"{coordinator.device_name} {suffix}"
+        self._attr_suggested_object_id = f"{coordinator.slug}_{slugify(prop)}"
         self._attr_entity_category = entity_category
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self._fan.id)},
-            name=name,
-        )
+        self._attr_device_info = coordinator.device_info
 
     @property
     def is_on(self) -> bool | None:
